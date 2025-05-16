@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Header from './components/Header';
 import Licences from './pages/Licences';
 import Trainings from './pages/Trainings';
@@ -23,6 +23,26 @@ function App() {
     setIsLoggedIn(false);
   };
 
+  const HomeContent = () => {
+    const navigate = useNavigate();
+
+    return (
+      <div className="home-content">
+        {/* Grid sekcija za Treninge i Licence */}
+        <div className="grid-container enlarged">
+          <div className="grid-item clickable" onClick={() => navigate('/trainings')}>
+            <h2>Treninzi</h2>
+            <p>Pregledaj dostupne edukacije i planiraj svoj napredak.</p>
+          </div>
+          <div className="grid-item clickable" onClick={() => navigate('/licences')}>
+            <h2>Licence</h2>
+            <p>Upravljaj svojim licencama i provjeri status certifikata.</p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <Router>
       <div className="App">
@@ -37,61 +57,7 @@ function App() {
           {/* Glavna stranica */}
           <Route
             path="/"
-            element={
-              isLoggedIn ? (
-                <div className="home-content">
-                  <h1>Welcome to the Home Page</h1>
-                  <p>This is the home page of your application.</p>
-                  
-                  <div className="grid-container">
-                    <div className="grid-item">
-                      <h2>Section 1</h2>
-                      <p>Content for section 1 goes here. You can add more text, images, or other elements.</p>
-                    </div>
-                    <div className="grid-item">
-                      <h2>Section 2</h2>
-                      <p>Content for section 2 goes here. You can add more text, images, or other elements.</p>
-                    </div>
-                  </div>
-
-                  <div className="table-container">
-                    <h2>Sample Table</h2>
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>ID</th>
-                          <th>Name</th>
-                          <th>Role</th>
-                          <th>Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>1</td>
-                          <td>John Doe</td>
-                          <td>Admin</td>
-                          <td>Active</td>
-                        </tr>
-                        <tr>
-                          <td>2</td>
-                          <td>Jane Smith</td>
-                          <td>User</td>
-                          <td>Inactive</td>
-                        </tr>
-                        <tr>
-                          <td>3</td>
-                          <td>James Miller</td>
-                          <td>Editor</td>
-                          <td>Active</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
+            element={isLoggedIn ? <HomeContent /> : <Navigate to="/login" />}
           />
           {/* Stranica za licence */}
           <Route path="/licences" element={isLoggedIn ? <Licences /> : <Navigate to="/login" />} />

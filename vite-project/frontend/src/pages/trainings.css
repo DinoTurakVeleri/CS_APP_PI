@@ -1,0 +1,254 @@
+.trainings-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .trainings-container h1 {
+    text-align: left;
+    padding-left: 60px;
+    margin-bottom: 20px;
+  }
+  
+  .form-container {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .form-container h2 {
+    margin-bottom: 10px;
+  }
+  
+  .form-container input,
+  .form-container .react-datepicker-wrapper {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .form-container button {
+    padding: 8px 12px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .form-container button:hover {
+    background-color: #0056b3;
+  }
+  
+  .trainings-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .trainings-table th,
+  .trainings-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+  }
+  
+  .trainings-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+  }
+  
+  .trainings-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .trainings-table tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .trainings-table button {
+    padding: 6px 10px;
+    margin-right: 5px;
+    border: none;
+    border-radius: 4px;
+    background-color: #28a745;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .trainings-table button:hover {
+    background-color: #218838;
+  }
+  
+  .trainings-table button:last-child {
+    background-color: #dc3545;
+  }
+  
+  .trainings-table button:last-child:hover {
+    background-color: #c82333;
+  }
+
+
+  .form-container select {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+    font-size: 16px;
+  }
+  
+  .form-container select:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+
+
+  .trainings-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .trainings-container h1 {
+    text-align: left;
+    padding-left: 60px;
+    margin-bottom: 20px;
+  }
+  
+  .form-container {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .form-container h2 {
+    margin-bottom: 10px;
+  }
+  
+  .form-container input,
+  .form-container .react-datepicker-wrapper,
+  .form-container select {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+    font-size: 16px;
+  }
+  
+  .form-container input:focus,
+  .form-container select:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+  
+  .form-container button {
+    padding: 8px 12px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .form-container button:hover {
+    background-color: #0056b3;
+  }
+  
+  .trainings-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .trainings-table th,
+  .trainings-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+  }
+  
+  .trainings-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+  }
+  
+  .trainings-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .trainings-table tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .trainings-table button {
+    padding: 6px 10px;
+    margin-right: 5px;
+    border: none;
+    border-radius: 4px;
+    background-color: #28a745;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .trainings-table button:hover {
+    background-color: #218838;
+  }
+  
+  .trainings-table button:last-child {
+    background-color: #dc3545;
+  }
+  
+  .trainings-table button:last-child:hover {
+    background-color: #c82333;
+  }
+  
+  .message {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+    text-align: center;
+  }
+  
+  .message.success {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  
+  .message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+  
+  .loading {
+    padding: 10px;
+    margin: 10px 0;
+    text-align: center;
+    font-weight: bold;
+    color: #007bff;
+  }
+  
+  .search-container {
+    margin-bottom: 20px;
+  }
+  
+  .search-container input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }

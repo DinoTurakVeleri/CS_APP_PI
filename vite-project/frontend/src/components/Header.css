@@ -1,0 +1,77 @@
+.header {
+  background-color: #333;
+  color: white;
+  padding: 1rem;
+  position: relative;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.hamburger {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: block; /* Hamburger ikona je uvijek vidljiva */
+}
+
+.header h1 {
+  margin: 0;
+  flex-grow: 1;
+  text-align: center;
+}
+
+.nav-menu {
+  display: none; /* Sakrij izbornik po defaultu */
+  position: absolute;
+  top: 100%; /* Postavi ispod headera */
+  left: 0;
+  width: fit-content; /* Širina prema najdužoj riječi */
+  background-color: #333; /* Tamnija pozadina za izbornik */
+  padding: 0.5rem 1rem;
+  border-radius: 0px; /* Zaobljeni uglovi */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  max-height: 0; /* Početna visina za animaciju */
+  overflow: hidden; /* Sakrij sadržaj izvan max-height */
+  opacity: 0; /* Početna neprozirnost za animaciju */
+  transition: max-height 0.3s ease-out, opacity 0.3s ease-out; /* Animacija */
+}
+
+.nav-menu.open {
+  display: block; /* Prikaži izbornik kada je otvoren */
+  max-height: 200px; /* Maksimalna visina za animaciju */
+  opacity: 1; /* Potpuno vidljiv */
+}
+
+.nav-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.nav-menu ul li button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.5rem;
+  text-align: left;
+  width: 100%;
+  text-decoration: none;
+  transition: background-color 0.3s; /* Animacija za hover */
+}
+
+.nav-menu ul li button:hover {
+  background-color: #555; /* Svjetlija pozadina na hover */
+  border-radius: 3px; /* Zaobljeni uglovi na hover */
+}
+

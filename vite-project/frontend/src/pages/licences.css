@@ -1,0 +1,145 @@
+.licences-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto; /* Centriranje kontejnera */
+}
+
+.licences-container h1 {
+  text-align: left;
+  padding-left: 60px;
+  margin-bottom: 20px; /* Dodajemo malo prostora ispod naslova */
+}
+
+.licences-container p {
+  text-align: justify;
+  padding-left: 60px;
+  padding-right: 60px;
+  line-height: 1.6; /* Poboljšana čitljivost */
+}
+
+.licences-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.licences-table th, .licences-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+.licences-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.licences-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.licences-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+
+.licences-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.licences-container h1 {
+  text-align: left;
+  padding-left: 60px;
+  margin-bottom: 20px;
+}
+
+.licences-container p {
+  text-align: justify;
+  padding-left: 60px;
+  padding-right: 60px;
+  line-height: 1.6;
+}
+
+.form-container {
+  margin-bottom: 20px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-container h2 {
+  margin-bottom: 10px;
+}
+
+.form-container input {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.form-container button {
+  padding: 8px 12px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+.form-container button:hover {
+  background-color: #0056b3;
+}
+
+.licences-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.licences-table th, .licences-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+.licences-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.licences-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.licences-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.licences-table button {
+  padding: 6px 10px;
+  margin-right: 5px;
+  border: none;
+  border-radius: 4px;
+  background-color: #28a745;
+  color: white;
+  cursor: pointer;
+}
+
+.licences-table button:hover {
+  background-color: #218838;
+}
+
+.licences-table button:last-child {
+  background-color: #dc3545;
+}
+
+.licences-table button:last-child:hover {
+  background-color: #c82333;
+}

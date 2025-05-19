@@ -58,6 +58,9 @@ const Header = ({ isLoggedIn, onLogout }) => { // Dodajemo `isLoggedIn` i `onLog
           <li>
             <button onClick={() => handleNavigation('/trainings')}>Trainings</button>
           </li>
+           <li>
+            <button onClick={() => handleNavigation('/users')}>Users</button>
+          </li>
           {/* Dodajemo Logout dugme samo ako je korisnik prijavljen */}
           {isLoggedIn && (
             <li>

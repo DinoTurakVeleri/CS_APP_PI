@@ -5,9 +5,8 @@ const Licences = () => {
   const [licences, setLicences] = useState([]);
   const [newLicence, setNewLicence] = useState({ name: '', type: '', user: '', password: '' });
   const [editLicence, setEditLicence] = useState(null);
-  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
 
-  // Dohvaćanje podataka iz API-ja
   useEffect(() => {
     fetchLicences();
   }, []);
@@ -15,73 +14,75 @@ const Licences = () => {
   const fetchLicences = () => {
     fetch('http://localhost:5001/api/licences')
       .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
+        if (!response.ok) throw new Error('Network response was not ok');
         return response.json();
       })
       .then((data) => setLicences(data))
-      .catch((error) => {
-        console.error('Error fetching licences:', error);
-        setError('Failed to fetch licences. Please try again.');
+      .catch(() => {
+        setMessage('Failed to fetch licences. Please try again.');
       });
   };
 
-  // Dodavanje nove licence
   const addLicence = () => {
+    const { name, type, user, password } = newLicence;
+
+    if (!name || !type || !user || !password) {
+      setMessage('Please fill in all fields.');
+      return;
+    }
+
     fetch('http://localhost:5001/api/licences', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newLicence),
     })
       .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
+        if (!response.ok) throw new Error('Network response was not ok');
         return response.json();
       })
       .then(() => {
         fetchLicences();
         setNewLicence({ name: '', type: '', user: '', password: '' });
+        setMessage('Licence successfully added!');
       })
-      .catch((error) => {
-        console.error('Error adding licence:', error);
-        setError('Failed to add licence. Please try again.');
+      .catch(() => {
+        setMessage('Failed to add licence. Please try again.');
       });
   };
 
-  // Brisanje licence
   const deleteLicence = (id) => {
     fetch(`http://localhost:5001/api/licences/${id}`, {
       method: 'DELETE',
     })
       .then(() => {
         fetchLicences();
+        setMessage('Licence successfully deleted!');
       })
-      .catch((error) => {
-        console.error('Error deleting licence:', error);
-        setError('Failed to delete licence. Please try again.');
+      .catch(() => {
+        setMessage('Failed to delete licence. Please try again.');
       });
   };
 
-  // Ažuriranje licence
   const updateLicence = () => {
+    const { name, type, user, password } = editLicence;
+
+    if (!name || !type || !user || !password) {
+      setMessage('Please fill in all fields.');
+      return;
+    }
+
     fetch(`http://localhost:5001/api/licences/${editLicence.id}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(editLicence),
     })
       .then(() => {
         fetchLicences();
         setEditLicence(null);
+        setMessage('Licence successfully updated!');
       })
-      .catch((error) => {
-        console.error('Error updating licence:', error);
-        setError('Failed to update licence. Please try again.');
+      .catch(() => {
+        setMessage('Failed to update licence. Please try again.');
       });
   };
 
@@ -89,8 +90,8 @@ const Licences = () => {
     <div className="licences-container">
       <h1>Licences</h1>
 
-      {/* Prikaz grešaka */}
-      {error && <div className="error-message">{error}</div>}
+      {/* Prikaz poruka */}
+      {message && <div className={`message ${message.includes('Failed') ? 'error' : 'success'}`}>{message}</div>}
 
       {/* Forma za unos nove licence */}
       <div className="form-container">

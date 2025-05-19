@@ -1,7 +1,7 @@
 const pool = require('../database'); // Povezivanje s bazom
 const bcrypt = require('bcryptjs');  // Za hashiranje lozinki
 
-// 📌 Funkcija za registraciju korisnika
+// Funkcija za registraciju korisnika
 exports.register = async (req, res) => {
   const { username, password } = req.body;
 

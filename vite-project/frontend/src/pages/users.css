@@ -1,61 +1,17 @@
-.licences-container {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto; /* Centriranje kontejnera */
-}
-
-.licences-container h1 {
-  text-align: left;
-  padding-left: 60px;
-  margin-bottom: 20px; /* Dodajemo malo prostora ispod naslova */
-}
-
-.licences-container p {
-  text-align: justify;
-  padding-left: 60px;
-  padding-right: 60px;
-  line-height: 1.6; /* Poboljšana čitljivost */
-}
-
-.licences-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-.licences-table th, .licences-table td {
-  border: 1px solid #ddd;
-  padding: 12px;
-  text-align: left;
-}
-
-.licences-table th {
-  background-color: #f4f4f4;
-  font-weight: bold;
-}
-
-.licences-table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.licences-table tr:hover {
-  background-color: #f1f1f1;
-}
-
-
-.licences-container {
+.users-container {
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
+  font-family: Arial, sans-serif;
 }
 
-.licences-container h1 {
+.users-container h1 {
   text-align: left;
   padding-left: 60px;
   margin-bottom: 20px;
 }
 
-.licences-container p {
+.users-container p {
   text-align: justify;
   padding-left: 60px;
   padding-right: 60px;
@@ -72,16 +28,24 @@
 
 .form-container h2 {
   margin-bottom: 10px;
+  text-align: left;
 }
 
-.form-container input {
+.form-container input,
+.form-container select {
   display: block;
   width: 100%;
   padding: 8px;
   margin-bottom: 10px;
-  border: 1px solid #ddd;
+  font-size: 14px;
+  border: 1px solid #ccc;
   border-radius: 4px;
 }
+
+.narrow-select {
+  max-width: 200px;
+}
+
 
 .form-container button {
   padding: 8px 12px;
@@ -97,32 +61,33 @@
   background-color: #0056b3;
 }
 
-.licences-table {
+.users-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
 }
 
-.licences-table th, .licences-table td {
+.users-table th,
+.users-table td {
   border: 1px solid #ddd;
   padding: 12px;
   text-align: left;
 }
 
-.licences-table th {
+.users-table th {
   background-color: #f4f4f4;
   font-weight: bold;
 }
 
-.licences-table tr:nth-child(even) {
+.users-table tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
-.licences-table tr:hover {
+.users-table tr:hover {
   background-color: #f1f1f1;
 }
 
-.licences-table button {
+.users-table button {
   padding: 6px 10px;
   margin-right: 5px;
   border: none;
@@ -132,15 +97,15 @@
   cursor: pointer;
 }
 
-.licences-table button:hover {
+.users-table button:hover {
   background-color: #218838;
 }
 
-.licences-table button:last-child {
+.users-table button:last-child {
   background-color: #dc3545;
 }
 
-.licences-table button:last-child:hover {
+.users-table button:last-child:hover {
   background-color: #c82333;
 }
 
@@ -160,3 +125,4 @@
   background-color: #f8d7da;
   color: #721c24;
 }
+

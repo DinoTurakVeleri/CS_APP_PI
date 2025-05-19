@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Header from './components/Header';
 import Licences from './pages/Licences';
 import Trainings from './pages/Trainings';
 import Login from './pages/Login'; // Uvozimo Login komponentu
 import './App.css';
-import Users from './pages/Users';  
-
+import Users from './pages/Users';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false); // Provjera autentikacije
 
-  // Provjera da li je korisnik prijavljen (npr. iz localStorage ili sessionStorage)
+  // Provjera da li je korisnik prijavljen
   useEffect(() => {
     const loggedInStatus = localStorage.getItem('isLoggedIn');
     if (loggedInStatus === 'true') {
       setIsLoggedIn(true);
     }
+    setAuthChecked(true); // Signal da je provjera završena
   }, []);
 
   // Funkcija za odjavu
@@ -24,6 +25,11 @@ function App() {
     localStorage.removeItem('isLoggedIn');
     setIsLoggedIn(false);
   };
+
+  // Ako autentikacija još nije provjerena, ne prikazuj ništa (ili loader)
+  if (!authChecked) {
+    return <div>Loading...</div>;
+  }
 
   const HomeContent = () => {
     const navigate = useNavigate();
@@ -51,30 +57,29 @@ function App() {
 
   return (
     <Router>
-  <div className="App">
-    {/* Prosljeđujemo `isLoggedIn` i `onLogout` u Header */}
-    <Header isLoggedIn={isLoggedIn} onLogout={handleLogout} />
-    <Routes>
-      {/* Log-in i registracijska stranica */}
-      <Route
-        path="/login"
-        element={isLoggedIn ? <Navigate to="/" /> : <Login setIsLoggedIn={setIsLoggedIn} />}
-      />
-      {/* Glavna stranica */}
-      <Route
-        path="/"
-        element={isLoggedIn ? <HomeContent /> : <Navigate to="/login" />}
-      />
-      {/* Stranica za licence */}
-      <Route path="/licences" element={isLoggedIn ? <Licences /> : <Navigate to="/login" />} />
-      {/* Stranica za treninge */}
-      <Route path="/trainings" element={isLoggedIn ? <Trainings /> : <Navigate to="/login" />} />
-      {/* Stranica za korisnike */}
-      <Route path="/users" element={isLoggedIn ? <Users /> : <Navigate to="/login" />} />
-    </Routes>
-  </div>
-</Router>
-
+      <div className="App">
+        {/* Prosljeđujemo `isLoggedIn` i `onLogout` u Header */}
+        <Header isLoggedIn={isLoggedIn} onLogout={handleLogout} />
+        <Routes>
+          {/* Log-in i registracijska stranica */}
+          <Route
+            path="/login"
+            element={isLoggedIn ? <Navigate to="/" /> : <Login setIsLoggedIn={setIsLoggedIn} />}
+          />
+          {/* Glavna stranica */}
+          <Route
+            path="/"
+            element={isLoggedIn ? <HomeContent /> : <Navigate to="/login" />}
+          />
+          {/* Stranica za licence */}
+          <Route path="/licences" element={isLoggedIn ? <Licences /> : <Navigate to="/login" />} />
+          {/* Stranica za treninge */}
+          <Route path="/trainings" element={isLoggedIn ? <Trainings /> : <Navigate to="/login" />} />
+          {/* Stranica za korisnike */}
+          <Route path="/users" element={isLoggedIn ? <Users /> : <Navigate to="/login" />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

@@ -183,6 +183,27 @@ const Trainings = () => {
           onChange={(date) => setNewTraining({ ...newTraining, date })}
           dateFormat="yyyy-MM-dd"
           placeholderText="Select date"
+          renderCustomHeader={({
+            date,
+            changeYear,
+            changeMonth,
+            decreaseMonth,
+            increaseMonth,
+            prevMonthButtonDisabled,
+            nextMonthButtonDisabled,
+          }) => (
+            <div className="custom-datepicker-header">
+              <button onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>
+                ‹
+              </button>
+              <span>
+                {date.toLocaleString('default', { month: 'long' })} {date.getFullYear()}
+              </span>
+              <button onClick={increaseMonth} disabled={nextMonthButtonDisabled}>
+                ›
+              </button>
+            </div>
+          )}
         />
         <input
           type="text"

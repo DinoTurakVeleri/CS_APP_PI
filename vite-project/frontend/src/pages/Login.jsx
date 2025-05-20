@@ -14,26 +14,22 @@ function Login({ setIsLoggedIn }) {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    // Provjera da li su polja popunjena
     if (!username || !password || !confirmPassword) {
       setError('Please fill in all fields.');
       return;
     }
 
-    // Provjera da li se lozinke podudaraju
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
     }
 
-    // Provjera minimalne duljine lozinke
     if (password.length < 6) {
       setError('Password must be at least 6 characters long');
       return;
     }
 
     try {
-      // Slanje podataka na backend API za registraciju
       const response = await fetch('http://localhost:5001/api/register', {
         method: 'POST',
         headers: {
@@ -49,7 +45,6 @@ function Login({ setIsLoggedIn }) {
         return;
       }
 
-      // Ako je registracija uspješna, prikaži poruku i prebaci na prijavu
       setError('Registration successful! You can now log in.');
       setIsRegistering(false);
     } catch (err) {
@@ -61,14 +56,12 @@ function Login({ setIsLoggedIn }) {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Provjera da li su polja popunjena
     if (!username || !password) {
       setError('Please fill in all fields.');
       return;
     }
 
     try {
-      // Slanje podataka na backend API za prijavu
       const response = await fetch('http://localhost:5001/api/login', {
         method: 'POST',
         headers: {
@@ -84,9 +77,10 @@ function Login({ setIsLoggedIn }) {
         return;
       }
 
-      // Ako je prijava uspješna, postavi stanje prijave i preusmjeri na početnu stranicu
+      // Spremi username u localStorage
       setIsLoggedIn(true);
       localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('username', username); // ← OVA LINIJA JE BITNA
       navigate('/');
     } catch (err) {
       setError('An error occurred. Please try again.');

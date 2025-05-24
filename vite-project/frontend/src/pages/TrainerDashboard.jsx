@@ -4,70 +4,113 @@ import 'react-calendar/dist/Calendar.css';
 import './TrainerDashboard.css';
 
 const TrainerDashboard = ({ loggedInTrainer }) => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [licences, setLicences] = useState([]);
-  const [selectedLicenceId, setSelectedLicenceId] = useState('');
-  const [message, setMessage] = useState('');
+  const [selectedDate, setSelectedDate] = useState(new Date()); // Trenutno odabrani datum
+  const [trainings, setTrainings] = useState([]); // Svi treninzi iz baze
+  const [message, setMessage] = useState(''); // Poruka korisniku
 
+  // Dohvati sve treninge kad se stranica učita
   useEffect(() => {
-    fetch('http://localhost:5001/api/licences')
+    fetch('http://localhost:5001/api/trainings')
       .then(res => res.json())
-      .then(data => setLicences(data))
-      .catch(() => setMessage('Failed to load licences.'));
+      .then(setTrainings)
+      .catch(() => setMessage('Greška pri učitavanju treninga.'));
   }, []);
 
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-    setSelectedLicenceId(''); // reset odabira
-    setMessage('');
-  };
+  // Filtriraj korisnikove treninge
+  const myTrainings = trainings.filter(t => t.trainer === loggedInTrainer);
 
-  const assignLicence = () => {
-    if (!selectedLicenceId) {
-      setMessage('Please select a licence.');
-      return;
-    }
+  // Filtriraj treninge koji nemaju trenera
+  const openTrainings = trainings.filter(t => !t.trainer);
 
-    fetch(`http://localhost:5001/api/licences/${selectedLicenceId}/assign`, {
+  // Filtriraj treninge na odabrani datum
+  const trainingsOnSelectedDate = myTrainings.filter(t => {
+    const trainingDate = new Date(t.date);
+    return trainingDate.toDateString() === selectedDate.toDateString();
+  });
+
+  // Prijava na slobodni trening
+  const handleAssign = (id) => {
+    fetch(`http://localhost:5001/api/trainings/${id}/assign`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        usage_date: selectedDate.toISOString().split('T')[0],
-        assigned_trainer: loggedInTrainer,
-      }),
+      body: JSON.stringify({ trainer: loggedInTrainer }),
     })
       .then(res => {
         if (!res.ok) throw new Error();
-        return res.json();
+        setMessage('Uspješno ste se prijavili na trening.');
+        return fetch('http://localhost:5001/api/trainings');
       })
-      .then(() => setMessage('Licence successfully assigned.'))
-      .catch(() => setMessage('Failed to assign licence.'));
+      .then(res => res.json())
+      .then(setTrainings)
+      .catch(() => setMessage('Greška pri prijavi na trening.'));
   };
 
   return (
     <div className="trainer-dashboard">
+      {/* Lijeva strana: kalendar + detalji */}
       <div className="calendar-section">
-        <h2>Training Calendar</h2>
-        <Calendar value={selectedDate} onClickDay={handleDateChange} />
+        <h2>Kalendar treninga</h2>
+        <Calendar
+          value={selectedDate}
+          onClickDay={setSelectedDate}
+          tileContent={({ date }) => {
+            const isMyTraining = myTrainings.some(
+              t => new Date(t.date).toDateString() === date.toDateString()
+            );
+            return isMyTraining ? <div className="dot"></div> : null;
+          }}
+        />
+
+        <div className="day-details">
+          <h3>Detalji za {selectedDate.toDateString()}</h3>
+          {trainingsOnSelectedDate.length > 0 ? (
+            trainingsOnSelectedDate.map(t => (
+              <div key={t.id} className="training-item">
+                <strong>{t.title}</strong><br />
+                {t.description}
+              </div>
+            ))
+          ) : (
+            <p>Nema treninga za ovaj dan.</p>
+          )}
+        </div>
       </div>
 
+      {/* Desna strana: korisnikovi treninzi i otvoreni treninzi */}
       <div className="licence-section">
-        <h2>Assign Licence for {selectedDate.toDateString()}</h2>
-        <select
-          value={selectedLicenceId}
-          onChange={(e) => setSelectedLicenceId(e.target.value)}
-        >
-          <option value="">-- Select Licence --</option>
-          {licences.map((lic) => (
-            <option key={lic.id} value={lic.id}>
-              {lic.name} ({lic.type})
-            </option>
-          ))}
-        </select>
-        <button onClick={assignLicence}>Assign</button>
+        <div className="training-list">
+          <h3>Moji treninzi</h3>
+          {myTrainings.length > 0 ? (
+            myTrainings.map(t => (
+              <div key={t.id} className="training-item">
+                <strong>{t.title}</strong><br />
+                {new Date(t.date).toLocaleDateString()}<br />
+                {t.description}
+              </div>
+            ))
+          ) : (
+            <p>Nema zakazanih treninga.</p>
+          )}
+        </div>
+
+        <div className="training-list">
+          <h3>Slobodni treninzi</h3>
+          {openTrainings.length > 0 ? (
+            openTrainings.map(t => (
+              <div key={t.id} className="training-item">
+                <strong>{t.title}</strong><br />
+                {new Date(t.date).toLocaleDateString()}<br />
+                {t.description}<br />
+                <button onClick={() => handleAssign(t.id)}>Prijavi se</button>
+              </div>
+            ))
+          ) : (
+            <p>Nema slobodnih treninga.</p>
+          )}
+        </div>
 
         {message && (
-          <div className={`message ${message.includes('Failed') ? 'error' : 'success'}`}>
+          <div className={`message ${message.includes('Greška') ? 'error' : 'success'}`}>
             {message}
           </div>
         )}

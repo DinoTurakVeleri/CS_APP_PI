@@ -6,6 +6,8 @@ const authRoutes = require('./routes/authRoutes');
 const licencesRoutes = require('./routes/licencesRoutes');
 const trainingsRoutes = require('./routes/trainingsRoutes');
 const usersRoutes = require('./routes/usersRoutes');
+const reservationRoutes = require('./routes/reservationRoutes');
+
 
 const app = express();
 const PORT = 5001;
@@ -24,6 +26,8 @@ app.use('/api', authRoutes);                 // /api/register, /api/login
 app.use('/api/licences', licencesRoutes);   // /api/licences + :id
 app.use('/api/trainings', trainingsRoutes); // /api/trainings + :id
 app.use('/api/users', usersRoutes);     // /api/users + :id
+app.use('/api', reservationRoutes);
+
 
 // Start servera
 app.listen(PORT, () => {

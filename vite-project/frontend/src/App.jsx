@@ -4,9 +4,10 @@ import Header from './components/Header';
 import Licences from './pages/Licences';
 import Trainings from './pages/Trainings';
 import Login from './pages/Login';
-import './App.css';
 import Users from './pages/Users';
-import TrainerDashboard from './pages/TrainerDashboard'; // ✅ NOVO
+import TrainerDashboard from './pages/TrainerDashboard';
+import ReservationLicence from './pages/ReservationLicence';
+import './App.css';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -22,7 +23,7 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('username'); // brišemo i username
+    localStorage.removeItem('username');
     setIsLoggedIn(false);
   };
 
@@ -34,8 +35,8 @@ function App() {
     const navigate = useNavigate();
 
     return (
-      <div className="home-content">
-        <div className="grid-container enlarged">
+      <div className="home-content" style={{ display: 'flex', justifyContent: 'center' }}>
+        <div className="grid-container">
           <div className="grid-item clickable" onClick={() => navigate('/trainings')}>
             <h2>TRAININGS</h2>
             <p>View your trainings, and select upcoming ones.</p>
@@ -48,9 +49,13 @@ function App() {
             <h2>USERS</h2>
             <p>Manage platform users.</p>
           </div>
-          <div className="grid-item clickable" onClick={() => navigate('/trainer')}> {}
+          <div className="grid-item clickable" onClick={() => navigate('/trainer')}>
             <h2>TRAINER DASHBOARD</h2>
             <p>View calendar and assign licence for the day.</p>
+          </div>
+          <div className="grid-item clickable" onClick={() => navigate('/reservation')}>
+            <h2>RESERVE LICENCE</h2>
+            <p>Choose and reserve a free licence for today.</p>
           </div>
         </div>
       </div>
@@ -78,9 +83,22 @@ function App() {
                 : <Navigate to="/login" />
             }
           />
-          <Route path="/licences" element={isLoggedIn ? <Licences /> : <Navigate to="/login" />} />
-          <Route path="/trainings" element={isLoggedIn ? <Trainings /> : <Navigate to="/login" />} />
-          <Route path="/users" element={isLoggedIn ? <Users /> : <Navigate to="/login" />} />
+          <Route
+            path="/reservation"
+            element={isLoggedIn ? <ReservationLicence /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/licences"
+            element={isLoggedIn ? <Licences /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/trainings"
+            element={isLoggedIn ? <Trainings /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/users"
+            element={isLoggedIn ? <Users /> : <Navigate to="/login" />}
+          />
         </Routes>
       </div>
     </Router>

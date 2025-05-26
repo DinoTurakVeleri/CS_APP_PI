@@ -101,7 +101,7 @@ const TrainerDashboard = ({ loggedInTrainer }) => {
                 <strong>{t.title}</strong><br />
                 {new Date(t.date).toLocaleDateString()}<br />
                 {t.description}<br />
-                <button onClick={() => handleAssign(t.id)}>Prijavi se</button>
+                <button onClick={() => handleAssign(t.id)}>Sign up</button>
               </div>
             ))
           ) : (

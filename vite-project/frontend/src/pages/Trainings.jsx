@@ -1,38 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import DatePicker from 'react-datepicker'; // Kalendar za odabir datuma
-import 'react-datepicker/dist/react-datepicker.css'; // Stilovi za kalendar
-import './Trainings.css'; // Stilovi za stranicu
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import './Trainings.css';
 
 const Trainings = () => {
-  const [trainings, setTrainings] = useState([]); // State za pohranu treninga
-  const [licences, setLicences] = useState([]); // State za pohranu licenci
-  const [newTraining, setNewTraining] = useState({ title: '', description: '', date: new Date(), trainer: '', licence_id: '' }); // State za unos novog treninga
-  const [editTraining, setEditTraining] = useState(null); // State za uređivanje treninga
-  const [message, setMessage] = useState(''); // State za poruke
-  const [isLoading, setIsLoading] = useState(false); // State za učitavanje
-  const [searchTerm, setSearchTerm] = useState(''); // State za pretraživanje
+  const [trainings, setTrainings] = useState([]);
+  const [licences, setLicences] = useState([]);
+  const [newTraining, setNewTraining] = useState({ title: '', description: '', date: new Date(), trainer: '', licence_id: '' });
+  const [editTraining, setEditTraining] = useState(null);
+  const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
-  // Funkcija za formatiranje datuma u format YYYY-MM-DD
   const formatDate = (date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Mjeseci su 0-based
-    const day = String(date.getDate()).padStart(2, '0');
+    const d = new Date(date);
+    if (isNaN(d)) return '';
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   };
 
-  // Dohvaćanje podataka iz API-ja
   useEffect(() => {
     fetchTrainings();
     fetchLicences();
   }, []);
 
   const fetchTrainings = () => {
-    setIsLoading(true); // Pokreni učitavanje
+    setIsLoading(true);
     fetch('http://localhost:5001/api/trainings')
       .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
+        if (!response.ok) throw new Error('Network response was not ok');
         return response.json();
       })
       .then((data) => setTrainings(data))
@@ -40,15 +38,13 @@ const Trainings = () => {
         console.error('Error fetching trainings:', error);
         setMessage('Failed to fetch trainings. Please try again.');
       })
-      .finally(() => setIsLoading(false)); // Zaustavi učitavanje
+      .finally(() => setIsLoading(false));
   };
 
   const fetchLicences = () => {
     fetch('http://localhost:5001/api/licences')
       .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
+        if (!response.ok) throw new Error('Network response was not ok');
         return response.json();
       })
       .then((data) => setLicences(data))
@@ -58,97 +54,84 @@ const Trainings = () => {
       });
   };
 
-  // Dodavanje novog treninga
   const addTraining = () => {
     if (!newTraining.title || !newTraining.description || !newTraining.trainer || !newTraining.licence_id) {
       setMessage('Please fill in all fields.');
       return;
     }
 
-    setIsLoading(true); // Pokreni učitavanje
+    setIsLoading(true);
 
-    const licenceId = newTraining.licence_id || null; // Ako je licence_id prazan, postavi na NULL
+    const licenceId = newTraining.licence_id || null;
     fetch('http://localhost:5001/api/trainings', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         ...newTraining,
-        date: formatDate(newTraining.date), // Koristi formatDate umjesto toISOString
-        licence_id: licenceId, // Koristi licenceId umjesto newTraining.licence_id
+        date: formatDate(newTraining.date),
+        licence_id: licenceId,
       }),
     })
       .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
+        if (!response.ok) throw new Error('Network response was not ok');
         return response.json();
       })
       .then(() => {
         setMessage('Training successfully added!');
-        fetchTrainings(); // Ponovno dohvaćanje podataka
-        setNewTraining({ title: '', description: '', date: new Date(), trainer: '', licence_id: '' }); // Resetiranje forme
+        fetchTrainings();
+        setNewTraining({ title: '', description: '', date: new Date(), trainer: '', licence_id: '' });
       })
       .catch((error) => {
         setMessage('Failed to add training. Please try again.');
         console.error('Error adding training:', error);
       })
-      .finally(() => setIsLoading(false)); // Zaustavi učitavanje
+      .finally(() => setIsLoading(false));
   };
 
-  // Brisanje treninga
   const deleteTraining = (id) => {
-    setIsLoading(true); // Pokreni učitavanje
-
-    fetch(`http://localhost:5001/api/trainings/${id}`, {
-      method: 'DELETE',
-    })
+    setIsLoading(true);
+    fetch(`http://localhost:5001/api/trainings/${id}`, { method: 'DELETE' })
       .then(() => {
         setMessage('Training successfully deleted!');
-        fetchTrainings(); // Ponovno dohvaćanje podataka
+        fetchTrainings();
       })
       .catch((error) => {
         setMessage('Failed to delete training. Please try again.');
         console.error('Error deleting training:', error);
       })
-      .finally(() => setIsLoading(false)); // Zaustavi učitavanje
+      .finally(() => setIsLoading(false));
   };
 
-  // Ažuriranje treninga
   const updateTraining = () => {
     if (!editTraining.title || !editTraining.description || !editTraining.trainer || !editTraining.licence_id) {
       setMessage('Please fill in all fields.');
       return;
     }
 
-    setIsLoading(true); // Pokreni učitavanje
+    setIsLoading(true);
 
-    const licenceId = editTraining.licence_id || null; // Ako je licence_id prazan, postavi na NULL
+    const licenceId = editTraining.licence_id || null;
     fetch(`http://localhost:5001/api/trainings/${editTraining.id}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         ...editTraining,
-        date: formatDate(editTraining.date), // Koristi formatDate umjesto toISOString
-        licence_id: licenceId, // Koristi licenceId umjesto editTraining.licence_id
+        date: formatDate(editTraining.date),
+        licence_id: licenceId,
       }),
     })
       .then(() => {
         setMessage('Training successfully updated!');
-        fetchTrainings(); // Ponovno dohvaćanje podataka
-        setEditTraining(null); // Zatvaranje forme za uređivanje
+        fetchTrainings();
+        setEditTraining(null);
       })
       .catch((error) => {
         setMessage('Failed to update training. Please try again.');
         console.error('Error updating training:', error);
       })
-      .finally(() => setIsLoading(false)); // Zaustavi učitavanje
+      .finally(() => setIsLoading(false));
   };
 
-  // Filtriranje treninga po naslovu
   const filteredTrainings = trainings.filter((training) =>
     training.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -157,64 +140,28 @@ const Trainings = () => {
     <div className="trainings-container">
       <h1>Trainings</h1>
 
-      {/* Prikaz poruka */}
       {message && <div className={`message ${message.includes('Failed') ? 'error' : 'success'}`}>{message}</div>}
-
-      {/* Indikator učitavanja */}
       {isLoading && <div className="loading">Loading...</div>}
 
-      {/* Forma za dodavanje novog treninga */}
       <div className="form-container">
         <h2>Add New Training</h2>
-        <input
-          type="text"
-          placeholder="Title"
-          value={newTraining.title}
-          onChange={(e) => setNewTraining({ ...newTraining, title: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Description"
-          value={newTraining.description}
-          onChange={(e) => setNewTraining({ ...newTraining, description: e.target.value })}
-        />
+        <input type="text" placeholder="Title" value={newTraining.title} onChange={(e) => setNewTraining({ ...newTraining, title: e.target.value })} />
+        <input type="text" placeholder="Description" value={newTraining.description} onChange={(e) => setNewTraining({ ...newTraining, description: e.target.value })} />
         <DatePicker
           selected={newTraining.date}
           onChange={(date) => setNewTraining({ ...newTraining, date })}
           dateFormat="yyyy-MM-dd"
           placeholderText="Select date"
-          renderCustomHeader={({
-            date,
-            changeYear,
-            changeMonth,
-            decreaseMonth,
-            increaseMonth,
-            prevMonthButtonDisabled,
-            nextMonthButtonDisabled,
-          }) => (
+          renderCustomHeader={({ date, changeYear, changeMonth, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled }) => (
             <div className="custom-datepicker-header">
-              <button onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>
-                ‹
-              </button>
-              <span>
-                {date.toLocaleString('default', { month: 'long' })} {date.getFullYear()}
-              </span>
-              <button onClick={increaseMonth} disabled={nextMonthButtonDisabled}>
-                ›
-              </button>
+              <button onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>‹</button>
+              <span>{date.toLocaleString('default', { month: 'long' })} {date.getFullYear()}</span>
+              <button onClick={increaseMonth} disabled={nextMonthButtonDisabled}>›</button>
             </div>
           )}
         />
-        <input
-          type="text"
-          placeholder="Trainer"
-          value={newTraining.trainer}
-          onChange={(e) => setNewTraining({ ...newTraining, trainer: e.target.value })}
-        />
-        <select
-          value={newTraining.licence_id}
-          onChange={(e) => setNewTraining({ ...newTraining, licence_id: e.target.value })}
-        >
+        <input type="text" placeholder="Trainer" value={newTraining.trainer} onChange={(e) => setNewTraining({ ...newTraining, trainer: e.target.value })} />
+        <select value={newTraining.licence_id} onChange={(e) => setNewTraining({ ...newTraining, licence_id: e.target.value })}>
           <option value="">Select Licence</option>
           {licences.map((licence) => (
             <option key={licence.id} value={licence.id}>
@@ -225,38 +172,19 @@ const Trainings = () => {
         <button onClick={addTraining}>Add Training</button>
       </div>
 
-      {/* Forma za uređivanje treninga */}
       {editTraining && (
         <div className="form-container">
           <h2>Edit Training</h2>
-          <input
-            type="text"
-            placeholder="Title"
-            value={editTraining.title}
-            onChange={(e) => setEditTraining({ ...editTraining, title: e.target.value })}
-          />
-          <input
-            type="text"
-            placeholder="Description"
-            value={editTraining.description}
-            onChange={(e) => setEditTraining({ ...editTraining, description: e.target.value })}
-          />
+          <input type="text" placeholder="Title" value={editTraining.title} onChange={(e) => setEditTraining({ ...editTraining, title: e.target.value })} />
+          <input type="text" placeholder="Description" value={editTraining.description} onChange={(e) => setEditTraining({ ...editTraining, description: e.target.value })} />
           <DatePicker
-            selected={new Date(editTraining.date)}
+            selected={editTraining.date ? new Date(editTraining.date) : null}
             onChange={(date) => setEditTraining({ ...editTraining, date })}
             dateFormat="yyyy-MM-dd"
             placeholderText="Select date"
           />
-          <input
-            type="text"
-            placeholder="Trainer"
-            value={editTraining.trainer}
-            onChange={(e) => setEditTraining({ ...editTraining, trainer: e.target.value })}
-          />
-          <select
-            value={editTraining.licence_id}
-            onChange={(e) => setEditTraining({ ...editTraining, licence_id: e.target.value })}
-          >
+          <input type="text" placeholder="Trainer" value={editTraining.trainer} onChange={(e) => setEditTraining({ ...editTraining, trainer: e.target.value })} />
+          <select value={editTraining.licence_id} onChange={(e) => setEditTraining({ ...editTraining, licence_id: e.target.value })}>
             <option value="">Select Licence</option>
             {licences.map((licence) => (
               <option key={licence.id} value={licence.id}>
@@ -269,17 +197,10 @@ const Trainings = () => {
         </div>
       )}
 
-      {/* Polje za pretraživanje */}
       <div className="search-container">
-        <input
-          type="text"
-          placeholder="Search by title"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+        <input type="text" placeholder="Search by title" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
       </div>
 
-      {/* Tablica za prikaz treninga */}
       <table className="trainings-table">
         <thead>
           <tr>

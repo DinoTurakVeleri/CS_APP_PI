@@ -6,6 +6,7 @@ import './Trainings.css';
 const Trainings = () => {
   const [trainings, setTrainings] = useState([]);
   const [licences, setLicences] = useState([]);
+  const [users, setUsers] = useState([]); // Novi state za korisnike
   const [newTraining, setNewTraining] = useState({ title: '', description: '', date: new Date(), trainer: '', licence_id: '' });
   const [editTraining, setEditTraining] = useState(null);
   const [message, setMessage] = useState('');
@@ -24,38 +25,34 @@ const Trainings = () => {
   useEffect(() => {
     fetchTrainings();
     fetchLicences();
+    fetchUsers(); // Dohvati korisnike
   }, []);
 
   const fetchTrainings = () => {
     setIsLoading(true);
     fetch('http://localhost:5001/api/trainings')
-      .then((response) => {
-        if (!response.ok) throw new Error('Network response was not ok');
-        return response.json();
-      })
-      .then((data) => setTrainings(data))
-      .catch((error) => {
-        console.error('Error fetching trainings:', error);
-        setMessage('Failed to fetch trainings. Please try again.');
-      })
+      .then(res => res.json())
+      .then(setTrainings)
+      .catch(() => setMessage('Failed to fetch trainings. Please try again.'))
       .finally(() => setIsLoading(false));
   };
 
   const fetchLicences = () => {
     fetch('http://localhost:5001/api/licences')
-      .then((response) => {
-        if (!response.ok) throw new Error('Network response was not ok');
-        return response.json();
-      })
-      .then((data) => setLicences(data))
-      .catch((error) => {
-        console.error('Error fetching licences:', error);
-        setMessage('Failed to fetch licences. Please try again.');
-      });
+      .then(res => res.json())
+      .then(setLicences)
+      .catch(() => setMessage('Failed to fetch licences. Please try again.'));
+  };
+
+  const fetchUsers = () => {
+    fetch('http://localhost:5001/api/users')
+      .then(res => res.json())
+      .then(setUsers)
+      .catch(() => setMessage('Failed to load users.'));
   };
 
   const addTraining = () => {
-    if (!newTraining.title || !newTraining.description || !newTraining.trainer || !newTraining.licence_id) {
+    if (!newTraining.title || !newTraining.description || !newTraining.licence_id) {
       setMessage('Please fill in all fields.');
       return;
     }
@@ -72,19 +69,13 @@ const Trainings = () => {
         licence_id: licenceId,
       }),
     })
-      .then((response) => {
-        if (!response.ok) throw new Error('Network response was not ok');
-        return response.json();
-      })
+      .then(res => res.json())
       .then(() => {
         setMessage('Training successfully added!');
         fetchTrainings();
         setNewTraining({ title: '', description: '', date: new Date(), trainer: '', licence_id: '' });
       })
-      .catch((error) => {
-        setMessage('Failed to add training. Please try again.');
-        console.error('Error adding training:', error);
-      })
+      .catch(() => setMessage('Failed to add training. Please try again.'))
       .finally(() => setIsLoading(false));
   };
 
@@ -95,15 +86,12 @@ const Trainings = () => {
         setMessage('Training successfully deleted!');
         fetchTrainings();
       })
-      .catch((error) => {
-        setMessage('Failed to delete training. Please try again.');
-        console.error('Error deleting training:', error);
-      })
+      .catch(() => setMessage('Failed to delete training. Please try again.'))
       .finally(() => setIsLoading(false));
   };
 
   const updateTraining = () => {
-    if (!editTraining.title || !editTraining.description || !editTraining.trainer || !editTraining.licence_id) {
+    if (!editTraining.title || !editTraining.description || !editTraining.licence_id) {
       setMessage('Please fill in all fields.');
       return;
     }
@@ -125,10 +113,7 @@ const Trainings = () => {
         fetchTrainings();
         setEditTraining(null);
       })
-      .catch((error) => {
-        setMessage('Failed to update training. Please try again.');
-        console.error('Error updating training:', error);
-      })
+      .catch(() => setMessage('Failed to update training. Please try again.'))
       .finally(() => setIsLoading(false));
   };
 
@@ -147,6 +132,7 @@ const Trainings = () => {
         <h2>Add New Training</h2>
         <input type="text" placeholder="Title" value={newTraining.title} onChange={(e) => setNewTraining({ ...newTraining, title: e.target.value })} />
         <input type="text" placeholder="Description" value={newTraining.description} onChange={(e) => setNewTraining({ ...newTraining, description: e.target.value })} />
+        
         <DatePicker
           selected={newTraining.date}
           onChange={(date) => setNewTraining({ ...newTraining, date })}
@@ -160,10 +146,15 @@ const Trainings = () => {
             </div>
           )}
         />
-        <input type="text" placeholder="Trainer" value={newTraining.trainer} onChange={(e) => setNewTraining({ ...newTraining, trainer: e.target.value })} />
+        <select value={newTraining.trainer} onChange={(e) => setNewTraining({ ...newTraining, trainer: e.target.value })}>
+          <option value="">Select Trainer (optional)</option>
+          {users.map(user => (
+            <option key={user.id} value={user.name}>{user.name}</option>
+          ))}
+        </select>
         <select value={newTraining.licence_id} onChange={(e) => setNewTraining({ ...newTraining, licence_id: e.target.value })}>
           <option value="">Select Licence</option>
-          {licences.map((licence) => (
+          {licences.map(licence => (
             <option key={licence.id} value={licence.id}>
               {licence.name} (ID: {licence.id})
             </option>
@@ -182,11 +173,24 @@ const Trainings = () => {
             onChange={(date) => setEditTraining({ ...editTraining, date })}
             dateFormat="yyyy-MM-dd"
             placeholderText="Select date"
+            renderCustomHeader={({ date, changeYear, changeMonth, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled }) => (
+              <div className="custom-datepicker-header">
+                <button onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>‹</button>
+                <span>{date.toLocaleString('default', { month: 'long' })} {date.getFullYear()}</span>
+                <button onClick={increaseMonth} disabled={nextMonthButtonDisabled}>›</button>
+              </div>
+            )}
           />
-          <input type="text" placeholder="Trainer" value={editTraining.trainer} onChange={(e) => setEditTraining({ ...editTraining, trainer: e.target.value })} />
+
+          <select value={editTraining.trainer} onChange={(e) => setEditTraining({ ...editTraining, trainer: e.target.value })}>
+            <option value="">Select Trainer (optional)</option>
+            {users.map(user => (
+              <option key={user.id} value={user.name}>{user.name}</option>
+            ))}
+          </select>
           <select value={editTraining.licence_id} onChange={(e) => setEditTraining({ ...editTraining, licence_id: e.target.value })}>
             <option value="">Select Licence</option>
-            {licences.map((licence) => (
+            {licences.map(licence => (
               <option key={licence.id} value={licence.id}>
                 {licence.name} (ID: {licence.id})
               </option>

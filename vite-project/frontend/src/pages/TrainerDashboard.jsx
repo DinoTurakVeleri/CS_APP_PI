@@ -49,7 +49,7 @@ const TrainerDashboard = ({ loggedInTrainer }) => {
     <div className="trainer-dashboard">
       {/* Lijeva strana: kalendar + detalji */}
       <div className="calendar-section">
-        <h2>Kalendar treninga</h2>
+        <h2>Trainings calendar</h2>
         <Calendar
           value={selectedDate}
           onClickDay={setSelectedDate}
@@ -62,7 +62,7 @@ const TrainerDashboard = ({ loggedInTrainer }) => {
         />
 
         <div className="day-details">
-          <h3>Detalji za {selectedDate.toDateString()}</h3>
+          <h3>Details for {selectedDate.toDateString()}</h3>
           {trainingsOnSelectedDate.length > 0 ? (
             trainingsOnSelectedDate.map(t => (
               <div key={t.id} className="training-item">
@@ -71,7 +71,7 @@ const TrainerDashboard = ({ loggedInTrainer }) => {
               </div>
             ))
           ) : (
-            <p>Nema treninga za ovaj dan.</p>
+            <p>No trainings today.</p>
           )}
         </div>
       </div>
@@ -79,7 +79,7 @@ const TrainerDashboard = ({ loggedInTrainer }) => {
       {/* Desna strana: korisnikovi treninzi i otvoreni treninzi */}
       <div className="licence-section">
         <div className="training-list">
-          <h3>Moji treninzi</h3>
+          <h3>My trainings</h3>
           {myTrainings.length > 0 ? (
             myTrainings.map(t => (
               <div key={t.id} className="training-item">
@@ -89,12 +89,12 @@ const TrainerDashboard = ({ loggedInTrainer }) => {
               </div>
             ))
           ) : (
-            <p>Nema zakazanih treninga.</p>
+            <p>No scheduled trainings.</p>
           )}
         </div>
 
         <div className="training-list">
-          <h3>Slobodni treninzi</h3>
+          <h3>Available trainings</h3>
           {openTrainings.length > 0 ? (
             openTrainings.map(t => (
               <div key={t.id} className="training-item">
@@ -105,7 +105,7 @@ const TrainerDashboard = ({ loggedInTrainer }) => {
               </div>
             ))
           ) : (
-            <p>Nema slobodnih treninga.</p>
+            <p>No available trainings.</p>
           )}
         </div>
 

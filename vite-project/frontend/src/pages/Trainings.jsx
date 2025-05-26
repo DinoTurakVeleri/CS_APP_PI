@@ -6,7 +6,7 @@ import './Trainings.css';
 const Trainings = () => {
   const [trainings, setTrainings] = useState([]);
   const [licences, setLicences] = useState([]);
-  const [users, setUsers] = useState([]); // Novi state za korisnike
+  const [users, setUsers] = useState([]);
   const [newTraining, setNewTraining] = useState({ title: '', description: '', date: new Date(), trainer: '', licence_id: '' });
   const [editTraining, setEditTraining] = useState(null);
   const [message, setMessage] = useState('');
@@ -25,7 +25,7 @@ const Trainings = () => {
   useEffect(() => {
     fetchTrainings();
     fetchLicences();
-    fetchUsers(); // Dohvati korisnike
+    fetchUsers();
   }, []);
 
   const fetchTrainings = () => {
@@ -50,6 +50,8 @@ const Trainings = () => {
       .then(setUsers)
       .catch(() => setMessage('Failed to load users.'));
   };
+
+  const usedLicenceIds = trainings.map(t => t.licence_id).filter(id => id);
 
   const addTraining = () => {
     if (!newTraining.title || !newTraining.description || !newTraining.licence_id) {
@@ -132,32 +134,22 @@ const Trainings = () => {
         <h2>Add New Training</h2>
         <input type="text" placeholder="Title" value={newTraining.title} onChange={(e) => setNewTraining({ ...newTraining, title: e.target.value })} />
         <input type="text" placeholder="Description" value={newTraining.description} onChange={(e) => setNewTraining({ ...newTraining, description: e.target.value })} />
-        
         <DatePicker
           selected={newTraining.date}
           onChange={(date) => setNewTraining({ ...newTraining, date })}
           dateFormat="yyyy-MM-dd"
           placeholderText="Select date"
-          renderCustomHeader={({ date, changeYear, changeMonth, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled }) => (
-            <div className="custom-datepicker-header">
-              <button onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>‹</button>
-              <span>{date.toLocaleString('default', { month: 'long' })} {date.getFullYear()}</span>
-              <button onClick={increaseMonth} disabled={nextMonthButtonDisabled}>›</button>
-            </div>
-          )}
         />
         <select value={newTraining.trainer} onChange={(e) => setNewTraining({ ...newTraining, trainer: e.target.value })}>
-          <option value="">Select Trainer (optional)</option>
+          <option value="">Select Trainer</option>
           {users.map(user => (
             <option key={user.id} value={user.name}>{user.name}</option>
           ))}
         </select>
         <select value={newTraining.licence_id} onChange={(e) => setNewTraining({ ...newTraining, licence_id: e.target.value })}>
           <option value="">Select Licence</option>
-          {licences.map(licence => (
-            <option key={licence.id} value={licence.id}>
-              {licence.name} (ID: {licence.id})
-            </option>
+          {licences.filter(lic => !usedLicenceIds.includes(lic.id)).map(licence => (
+            <option key={licence.id} value={licence.id}>{licence.name} (ID: {licence.id})</option>
           ))}
         </select>
         <button onClick={addTraining}>Add Training</button>
@@ -173,27 +165,17 @@ const Trainings = () => {
             onChange={(date) => setEditTraining({ ...editTraining, date })}
             dateFormat="yyyy-MM-dd"
             placeholderText="Select date"
-            renderCustomHeader={({ date, changeYear, changeMonth, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled }) => (
-              <div className="custom-datepicker-header">
-                <button onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>‹</button>
-                <span>{date.toLocaleString('default', { month: 'long' })} {date.getFullYear()}</span>
-                <button onClick={increaseMonth} disabled={nextMonthButtonDisabled}>›</button>
-              </div>
-            )}
           />
-
           <select value={editTraining.trainer} onChange={(e) => setEditTraining({ ...editTraining, trainer: e.target.value })}>
-            <option value="">Select Trainer (optional)</option>
+            <option value="">Select Trainer</option>
             {users.map(user => (
               <option key={user.id} value={user.name}>{user.name}</option>
             ))}
           </select>
           <select value={editTraining.licence_id} onChange={(e) => setEditTraining({ ...editTraining, licence_id: e.target.value })}>
             <option value="">Select Licence</option>
-            {licences.map(licence => (
-              <option key={licence.id} value={licence.id}>
-                {licence.name} (ID: {licence.id})
-              </option>
+            {licences.filter(lic => !usedLicenceIds.includes(lic.id) || lic.id === editTraining.licence_id).map(licence => (
+              <option key={licence.id} value={licence.id}>{licence.name} (ID: {licence.id})</option>
             ))}
           </select>
           <button onClick={updateTraining}>Update Training</button>

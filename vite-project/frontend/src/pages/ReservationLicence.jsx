@@ -28,14 +28,14 @@ const ReservationLicence = () => {
       .then(setFreeLicences)
       .catch(() => {
         setMessageType('error');
-        setMessage('Greška pri dohvaćanju licenci.');
+        setMessage('Error fetching licences.');
       });
   };
 
   const handleReserveClick = () => {
     if (!selectedLicence) {
       setMessageType('error');
-      setMessage('Odaberi licencu za rezervaciju.');
+      setMessage('Select a licence to reserve.');
       return;
     }
 
@@ -69,7 +69,7 @@ const ReservationLicence = () => {
           setReservedLicence(reserved);
           localStorage.setItem('reservedLicence', JSON.stringify(reserved));
           setMessageType('success');
-          setMessage('Uspješno rezervirano!');
+          setMessage('Successfully reserved!');
           setSelectedLicence('');
           fetchFreeLicences();
         }
@@ -78,7 +78,7 @@ const ReservationLicence = () => {
       })
       .catch(() => {
         setMessageType('error');
-        setMessage('Greška pri rezervaciji.');
+        setMessage('Error reserving licence.');
         setShowModal(false);
       });
   };
@@ -125,8 +125,8 @@ const ReservationLicence = () => {
             <h3>Confirm reservation</h3>
             <p>Do you want to reserve <strong>{pendingLicence.name}</strong> for today ({pendingLicence.type})?</p>
             <div className="modal-actions">
-              <button className="confirm-btn" onClick={confirmReservation}>Potvrdi</button>
-              <button className="cancel-btn" onClick={() => setShowModal(false)}>Odustani</button>
+              <button className="confirm-btn" onClick={confirmReservation}>Confirm</button>
+              <button className="cancel-btn" onClick={() => setShowModal(false)}>Cancel</button>
             </div>
           </div>
         </div>

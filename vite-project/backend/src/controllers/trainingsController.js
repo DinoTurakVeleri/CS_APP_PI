@@ -41,3 +41,17 @@ exports.deleteTraining = (req, res) => {
     res.status(204).send();
   });
 };
+
+// Odabir treninga kao korisnik
+exports.assignTrainer = (req, res) => {
+  const { id } = req.params;
+  const { trainer } = req.body;
+
+  const query = 'UPDATE trainings SET trainer = ? WHERE id = ?';
+  pool.query(query, [trainer, id], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (results.affectedRows === 0) return res.status(404).json({ error: 'Training not found' });
+    res.json({ message: 'Trainer assigned successfully' });
+  });
+};
+

@@ -4,11 +4,12 @@ import 'react-calendar/dist/Calendar.css';
 import './TrainerDashboard.css';
 
 const TrainerDashboard = ({ loggedInTrainer }) => {
-  const [selectedDate, setSelectedDate] = useState(new Date()); // Trenutno odabrani datum
-  const [trainings, setTrainings] = useState([]); // Svi treninzi iz baze
-  const [message, setMessage] = useState(''); // Poruka korisniku
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [trainings, setTrainings] = useState([]);
+  const [users, setUsers] = useState([]); // Dodano: korisnici
+  const [message, setMessage] = useState('');
 
-  // Dohvati sve treninge kad se stranica učita
+  // Dohvati treninge
   useEffect(() => {
     fetch('http://localhost:5001/api/trainings')
       .then(res => res.json())
@@ -16,19 +17,27 @@ const TrainerDashboard = ({ loggedInTrainer }) => {
       .catch(() => setMessage('Greška pri učitavanju treninga.'));
   }, []);
 
-  // Filtriraj korisnikove treninge
-  const myTrainings = trainings.filter(t => t.trainer === loggedInTrainer);
+  // Dohvati korisnike
+  useEffect(() => {
+    fetch('http://localhost:5001/api/users')
+      .then(res => res.json())
+      .then(setUsers)
+      .catch(() => setMessage('Greška pri učitavanju korisnika.'));
+  }, []);
 
-  // Filtriraj treninge koji nemaju trenera
+  // Pronađi korisnikovo "name" iz "username"
+  const currentUser = users.find(u => u.username === loggedInTrainer);
+  const currentName = currentUser?.name || '';
+
+  // Filtriraj treninge na temelju imena trenera
+  const myTrainings = trainings.filter(t => t.trainer === loggedInTrainer);
   const openTrainings = trainings.filter(t => !t.trainer);
 
-  // Filtriraj treninge na odabrani datum
   const trainingsOnSelectedDate = myTrainings.filter(t => {
     const trainingDate = new Date(t.date);
     return trainingDate.toDateString() === selectedDate.toDateString();
   });
 
-  // Prijava na slobodni trening
   const handleAssign = (id) => {
     fetch(`http://localhost:5001/api/trainings/${id}/assign`, {
       method: 'PATCH',
@@ -76,7 +85,7 @@ const TrainerDashboard = ({ loggedInTrainer }) => {
         </div>
       </div>
 
-      {/* Desna strana: korisnikovi treninzi i otvoreni treninzi */}
+      {/* Desna strana */}
       <div className="licence-section">
         <div className="training-list">
           <h3>My trainings</h3>
@@ -85,7 +94,9 @@ const TrainerDashboard = ({ loggedInTrainer }) => {
               <div key={t.id} className="training-item">
                 <strong>{t.title}</strong><br />
                 {new Date(t.date).toLocaleDateString()}<br />
-                {t.description}
+                {t.description}<br />
+                Licence: {t.licence_name || 'N/A'}<br />
+                Password: {t.licence_password || 'N/A'}
               </div>
             ))
           ) : (

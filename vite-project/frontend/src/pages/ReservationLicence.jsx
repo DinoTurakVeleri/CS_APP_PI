@@ -17,7 +17,14 @@ const ReservationLicence = () => {
     const stored = localStorage.getItem('reservedLicence');
     if (stored) {
       try {
-        setReservedLicence(JSON.parse(stored));
+        const parsed = JSON.parse(stored);
+        const today = new Date().toISOString().slice(0, 10);
+
+        if (parsed.usage_date === today) {
+          setReservedLicence(parsed); // vrijedi još danas
+        } else {
+          localStorage.removeItem('reservedLicence'); // više nije važeća
+        }
       } catch {}
     }
   }, []);
@@ -32,19 +39,27 @@ const ReservationLicence = () => {
       });
   };
 
-  const handleReserveClick = () => {
-    if (!selectedLicence) {
-      setMessageType('error');
-      setMessage('Select a licence to reserve.');
-      return;
-    }
+    const handleReserveClick = () => {
+      const today = new Date().toISOString().slice(0, 10);
 
-    const licence = freeLicences.find(l => l.id === parseInt(selectedLicence));
-    if (!licence) return;
+      if (reservedLicence && reservedLicence.usage_date === today) {
+        setMessageType('error');
+        setMessage('You have already reserved a licence for today.');
+        return;
+      }
 
-    setPendingLicence(licence);
-    setShowModal(true);
-  };
+      if (!selectedLicence) {
+        setMessageType('error');
+        setMessage('Select a licence to reserve.');
+        return;
+      }
+
+      const licence = freeLicences.find(l => l.id === parseInt(selectedLicence));
+      if (!licence) return;
+
+      setPendingLicence(licence);
+      setShowModal(true);
+    };
 
   const confirmReservation = () => {
     if (!pendingLicence || !username) return;

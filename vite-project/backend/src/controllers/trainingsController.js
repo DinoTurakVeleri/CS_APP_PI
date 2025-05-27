@@ -2,7 +2,14 @@ const pool = require('../database');
 
 // Dohvati sve treninge
 exports.getAllTrainings = (req, res) => {
-  const query = 'SELECT * FROM trainings';
+  const query = `
+    SELECT 
+      t.*, 
+      l.name AS licence_name, 
+      l.password AS licence_password
+    FROM trainings t
+    LEFT JOIN licences l ON t.licence_id = l.id
+  `;
   pool.query(query, (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(results);

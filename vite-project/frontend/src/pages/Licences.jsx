@@ -110,7 +110,7 @@ const Licences = () => {
         />
         <input
           type="text"
-          placeholder="User"
+          placeholder="Username"
           value={newLicence.user}
           onChange={(e) => setNewLicence({ ...newLicence, user: e.target.value })}
         />
@@ -141,7 +141,7 @@ const Licences = () => {
           />
           <input
             type="text"
-            placeholder="User"
+            placeholder="Username"
             value={editLicence.user}
             onChange={(e) => setEditLicence({ ...editLicence, user: e.target.value })}
           />
@@ -162,7 +162,7 @@ const Licences = () => {
           <tr>
             <th>Name</th>
             <th>Type</th>
-            <th>User</th>
+            <th>Username</th>
             <th>Password</th>
             <th>Actions</th>
           </tr>

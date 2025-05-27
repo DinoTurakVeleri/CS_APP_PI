@@ -48,7 +48,7 @@ exports.deleteLicence = (req, res) => {
   });
 };
 
-// Trener odabire licencu za određeni dan
+// Dodijeli licencu treneru za određeni dan
 exports.assignLicenceToTrainer = (req, res) => {
   const { id } = req.params;
   const { usage_date, assigned_trainer } = req.body;
@@ -57,10 +57,13 @@ exports.assignLicenceToTrainer = (req, res) => {
     return res.status(400).json({ error: 'usage_date and assigned_trainer are required.' });
   }
 
-  const query = 'UPDATE licences SET usage_date = ?, assigned_trainer = ? WHERE id = ?';
+  const query = `
+    UPDATE licences
+    SET usage_date = ?, assigned_trainer = ?
+    WHERE id = ?
+  `;
   pool.query(query, [usage_date, assigned_trainer, id], (err, result) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json({ message: 'Licence assigned successfully.' });
   });
 };
-

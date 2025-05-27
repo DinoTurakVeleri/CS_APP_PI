@@ -90,10 +90,9 @@ const Licences = () => {
     <div className="licences-container">
       <h1>Licences</h1>
 
-      {/* Prikaz poruka */}
       {message && <div className={`message ${message.includes('Failed') ? 'error' : 'success'}`}>{message}</div>}
 
-      {/* Forma za unos nove licence */}
+      {/* Form: Add Licence */}
       <div className="form-container">
         <h2>Add New Licence</h2>
         <input
@@ -123,7 +122,7 @@ const Licences = () => {
         <button onClick={addLicence}>Add Licence</button>
       </div>
 
-      {/* Forma za ažuriranje postojeće licence */}
+      {/* Form: Edit Licence */}
       {editLicence && (
         <div className="form-container">
           <h2>Edit Licence</h2>
@@ -156,7 +155,7 @@ const Licences = () => {
         </div>
       )}
 
-      {/* Tablica za prikaz licenci */}
+      {/* Table: All Licences */}
       <table className="licences-table">
         <thead>
           <tr>
@@ -164,6 +163,8 @@ const Licences = () => {
             <th>Type</th>
             <th>Username</th>
             <th>Password</th>
+            <th>Assigned Trainer</th>
+            <th>Usage Date</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -174,6 +175,8 @@ const Licences = () => {
               <td>{licence.type}</td>
               <td>{licence.user}</td>
               <td>{licence.password}</td>
+              <td>{licence.assigned_trainer || '-'}</td>
+              <td>{licence.usage_date ? new Date(licence.usage_date).toLocaleDateString('hr-HR') : '-'}</td>
               <td>
                 <button onClick={() => setEditLicence(licence)}>Edit</button>
                 <button onClick={() => deleteLicence(licence.id)}>Delete</button>

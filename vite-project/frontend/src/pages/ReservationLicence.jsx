@@ -19,11 +19,10 @@ const ReservationLicence = () => {
       try {
         const parsed = JSON.parse(stored);
         const today = new Date().toISOString().slice(0, 10);
-
         if (parsed.usage_date === today) {
-          setReservedLicence(parsed); // vrijedi još danas
+          setReservedLicence(parsed);
         } else {
-          localStorage.removeItem('reservedLicence'); // više nije važeća
+          localStorage.removeItem('reservedLicence');
         }
       } catch {}
     }
@@ -39,35 +38,37 @@ const ReservationLicence = () => {
       });
   };
 
-    const handleReserveClick = () => {
-      const today = new Date().toISOString().slice(0, 10);
+  const handleReserveClick = () => {
+    const today = new Date().toISOString().slice(0, 10);
 
-      if (reservedLicence && reservedLicence.usage_date === today) {
-        setMessageType('error');
-        setMessage('You have already reserved a licence for today.');
-        return;
-      }
+    if (reservedLicence && reservedLicence.usage_date === today) {
+      setMessageType('error');
+      setMessage('You have already reserved a licence for today.');
+      return;
+    }
 
-      if (!selectedLicence) {
-        setMessageType('error');
-        setMessage('Select a licence to reserve.');
-        return;
-      }
+    if (!selectedLicence) {
+      setMessageType('error');
+      setMessage('Select a licence to reserve.');
+      return;
+    }
 
-      const licence = freeLicences.find(l => l.id === parseInt(selectedLicence));
-      if (!licence) return;
+    const licence = freeLicences.find(l => l.id === parseInt(selectedLicence));
+    if (!licence) return;
 
-      setPendingLicence(licence);
-      setShowModal(true);
-    };
+    setPendingLicence(licence);
+    setShowModal(true);
+  };
 
   const confirmReservation = () => {
     if (!pendingLicence || !username) return;
 
-    fetch('http://localhost:5001/api/reserve-licence', {
-      method: 'POST',
+    const today = new Date().toISOString().slice(0, 10);
+
+    fetch(`http://localhost:5001/api/licences/${pendingLicence.id}/assign`, {
+      method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: pendingLicence.id, username }),
+      body: JSON.stringify({ usage_date: today, assigned_trainer: username }),
     })
       .then((res) => res.json())
       .then((data) => {
@@ -77,8 +78,7 @@ const ReservationLicence = () => {
         } else {
           const reserved = {
             ...pendingLicence,
-            usage_date: new Date().toISOString().slice(0, 10),
-            user: username,
+            usage_date: today,
             assigned_trainer: username,
           };
           setReservedLicence(reserved);

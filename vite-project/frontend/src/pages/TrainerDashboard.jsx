@@ -3,34 +3,41 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './TrainerDashboard.css';
 
-const TrainerDashboard = ({ loggedInTrainer }) => {
+const TrainerDashboard = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [trainings, setTrainings] = useState([]);
-  const [users, setUsers] = useState([]); // Dodano: korisnici
+  const [currentUser, setCurrentUser] = useState(null);
   const [message, setMessage] = useState('');
+
+  const token = localStorage.getItem('token');
+  const authHeaders = {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  };
+
+  // Dohvati trenutno ulogiranog korisnika
+  useEffect(() => {
+    fetch('/api/users/me', { headers: authHeaders })
+      .then(res => {
+        if (!res.ok) throw new Error('Unauthorized');
+        return res.json();
+      })
+      .then(setCurrentUser)
+      .catch(() => setMessage('Error fetching user.'));
+  }, []);
 
   // Dohvati treninge
   useEffect(() => {
-    fetch('http://localhost:5001/api/trainings')
-      .then(res => res.json())
+    fetch('/api/trainings', { headers: authHeaders })
+      .then(res => {
+        if (!res.ok) throw new Error('Unauthorized');
+        return res.json();
+      })
       .then(setTrainings)
-      .catch(() => setMessage('Greška pri učitavanju treninga.'));
+      .catch(() => setMessage('Error fetching trainings.'));
   }, []);
 
-  // Dohvati korisnike
-  useEffect(() => {
-    fetch('http://localhost:5001/api/users')
-      .then(res => res.json())
-      .then(setUsers)
-      .catch(() => setMessage('Greška pri učitavanju korisnika.'));
-  }, []);
-
-  // Pronađi korisnikovo "name" iz "username"
-  const currentUser = users.find(u => u.username === loggedInTrainer);
-  const currentName = currentUser?.name || '';
-
-  // Filtriraj treninge na temelju imena trenera
-  const myTrainings = trainings.filter(t => t.trainer === loggedInTrainer);
+  const myTrainings = trainings.filter(t => t.trainer === currentUser?.username);
   const openTrainings = trainings.filter(t => !t.trainer);
 
   const trainingsOnSelectedDate = myTrainings.filter(t => {
@@ -39,24 +46,23 @@ const TrainerDashboard = ({ loggedInTrainer }) => {
   });
 
   const handleAssign = (id) => {
-    fetch(`http://localhost:5001/api/trainings/${id}/assign`, {
+    fetch(`/api/trainings/${id}/assign`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ trainer: loggedInTrainer }),
+      headers: authHeaders,
+      body: JSON.stringify({ trainer: currentUser?.username }),
     })
       .then(res => {
         if (!res.ok) throw new Error();
-        setMessage('Uspješno ste se prijavili na trening.');
-        return fetch('http://localhost:5001/api/trainings');
+        setMessage('Successfully assigned to training.');
+        return fetch('/api/trainings', { headers: authHeaders });
       })
       .then(res => res.json())
       .then(setTrainings)
-      .catch(() => setMessage('Greška pri prijavi na trening.'));
+      .catch(() => setMessage('Error while signing up for training.'));
   };
 
   return (
     <div className="trainer-dashboard">
-      {/* Lijeva strana: kalendar + detalji */}
       <div className="calendar-section">
         <h2>Trainings calendar</h2>
         <Calendar
@@ -85,7 +91,6 @@ const TrainerDashboard = ({ loggedInTrainer }) => {
         </div>
       </div>
 
-      {/* Desna strana */}
       <div className="licence-section">
         <div className="training-list">
           <h3>My trainings</h3>

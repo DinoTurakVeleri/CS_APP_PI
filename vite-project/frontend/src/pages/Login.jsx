@@ -10,7 +10,6 @@ function Login({ setIsLoggedIn }) {
   const [isRegistering, setIsRegistering] = useState(false);
   const navigate = useNavigate();
 
-  // Funkcija za registraciju
   const handleRegister = async (e) => {
     e.preventDefault();
 
@@ -32,9 +31,7 @@ function Login({ setIsLoggedIn }) {
     try {
       const response = await fetch('http://localhost:5001/api/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
 
@@ -52,7 +49,6 @@ function Login({ setIsLoggedIn }) {
     }
   };
 
-  // Funkcija za prijavu
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -64,9 +60,7 @@ function Login({ setIsLoggedIn }) {
     try {
       const response = await fetch('http://localhost:5001/api/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
 
@@ -77,10 +71,14 @@ function Login({ setIsLoggedIn }) {
         return;
       }
 
-      // Spremi username u localStorage
-      setIsLoggedIn(true);
+      // Sprema u localStorage
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('username', data.user.username);
+      localStorage.setItem('role', data.user.role);
+      localStorage.setItem('user_id', data.user.id);
       localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('username', username); // ← OVA LINIJA JE BITNA
+
+      setIsLoggedIn(true);
       navigate('/');
     } catch (err) {
       setError('An error occurred. Please try again.');

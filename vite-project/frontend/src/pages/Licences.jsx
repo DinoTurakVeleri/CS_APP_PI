@@ -7,12 +7,18 @@ const Licences = () => {
   const [editLicence, setEditLicence] = useState(null);
   const [message, setMessage] = useState('');
 
+  const token = localStorage.getItem('token');
+
   useEffect(() => {
     fetchLicences();
   }, []);
 
   const fetchLicences = () => {
-    fetch('http://localhost:5001/api/licences')
+    fetch('/api/licences', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
       .then((response) => {
         if (!response.ok) throw new Error('Network response was not ok');
         return response.json();
@@ -31,9 +37,12 @@ const Licences = () => {
       return;
     }
 
-    fetch('http://localhost:5001/api/licences', {
+    fetch('/api/licences', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify(newLicence),
     })
       .then((response) => {
@@ -51,8 +60,11 @@ const Licences = () => {
   };
 
   const deleteLicence = (id) => {
-    fetch(`http://localhost:5001/api/licences/${id}`, {
+    fetch(`/api/licences/${id}`, {
       method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
     })
       .then(() => {
         fetchLicences();
@@ -71,9 +83,12 @@ const Licences = () => {
       return;
     }
 
-    fetch(`http://localhost:5001/api/licences/${editLicence.id}`, {
+    fetch(`/api/licences/${editLicence.id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify(editLicence),
     })
       .then(() => {
@@ -92,7 +107,6 @@ const Licences = () => {
 
       {message && <div className={`message ${message.includes('Failed') ? 'error' : 'success'}`}>{message}</div>}
 
-      {/* Form: Add Licence */}
       <div className="form-container">
         <h2>Add New Licence</h2>
         <input
@@ -122,7 +136,6 @@ const Licences = () => {
         <button onClick={addLicence}>Add Licence</button>
       </div>
 
-      {/* Form: Edit Licence */}
       {editLicence && (
         <div className="form-container">
           <h2>Edit Licence</h2>
@@ -155,7 +168,6 @@ const Licences = () => {
         </div>
       )}
 
-      {/* Table: All Licences */}
       <table className="licences-table">
         <thead>
           <tr>

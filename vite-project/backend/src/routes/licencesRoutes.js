@@ -1,21 +1,21 @@
 const express = require('express');
 const router = express.Router();
 const licencesController = require('../controllers/licencesController');
+const { verifyToken, checkRole } = require('../middleware/authMiddleware');
 
-// Dohvati sve licence
-router.get('/', licencesController.getAllLicences);
+// SAMO ADMIN vidi sve licence
+router.get('/', verifyToken, checkRole(['ADMIN']), licencesController.getAllLicences);
 
-// Dodaj novu licencu
-router.post('/', licencesController.createLicence);
+// SAMO ADMIN dodaje licencu
+router.post('/', verifyToken, checkRole(['ADMIN']), licencesController.createLicence);
 
-// Ažuriraj licencu
-router.put('/:id', licencesController.updateLicence);
+// SAMO ADMIN ažurira licencu
+router.put('/:id', verifyToken, checkRole(['ADMIN']), licencesController.updateLicence);
 
-// Obriši licencu
-router.delete('/:id', licencesController.deleteLicence);
+// SAMO ADMIN briše licencu
+router.delete('/:id', verifyToken, checkRole(['ADMIN']), licencesController.deleteLicence);
 
-// Dodijeli licencu treneru za određeni datum
-router.patch('/:id/assign', licencesController.assignLicenceToTrainer);
+// USER (trener) dodjeljuje sebi licencu
+router.patch('/:id/assign', verifyToken, checkRole(['USER']), licencesController.assignLicenceToTrainer);
 
 module.exports = router;
-

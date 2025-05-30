@@ -2,16 +2,17 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Header.css';
 
-const Header = ({ isLoggedIn, onLogout }) => { // Dodajemo `isLoggedIn` i `onLogout` kao props
+const Header = ({ isLoggedIn, onLogout }) => {
   const navigate = useNavigate();
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // State za otvaranje/zatvaranje izbornika
-  const menuRef = useRef(null); // Referenca za izbornik
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  const role = localStorage.getItem('role'); // Dohvati rolu
 
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen); // Promijeni stanje izbornika
+    setIsMenuOpen(!isMenuOpen);
   };
 
-  // Zatvori izbornik kada se klikne izvan njega
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -25,43 +26,59 @@ const Header = ({ isLoggedIn, onLogout }) => { // Dodajemo `isLoggedIn` i `onLog
     };
   }, []);
 
-  // Funkcija za zatvaranje izbornika i navigaciju
   const handleNavigation = (path) => {
-    setIsMenuOpen(false); // Zatvori izbornik
-    navigate(path); // Navigiraj na odabranu rutu
+    setIsMenuOpen(false);
+    navigate(path);
   };
 
-  // Funkcija za odjavu
   const handleLogout = () => {
-    onLogout(); // Pozivamo `onLogout` funkciju iz propsa
-    navigate('/login'); // Preusmjeravamo korisnika na login stranicu
+    onLogout();
+    navigate('/login');
   };
 
   return (
     <header className="header">
       <div className="header-content">
         <button className="hamburger" onClick={toggleMenu}>
-          ☰ {/* Hamburger ikona */}
+          ☰
         </button>
         <h1>Consultancy & Support Department</h1>
       </div>
 
-      {/* Padajući izbornik */}
       <nav className={`nav-menu ${isMenuOpen ? 'open' : ''}`} ref={menuRef}>
         <ul>
           <li>
             <button onClick={() => handleNavigation('/')}>Home</button>
           </li>
-          <li>
-            <button onClick={() => handleNavigation('/licences')}>Licences</button>
-          </li>
-          <li>
-            <button onClick={() => handleNavigation('/trainings')}>Trainings</button>
-          </li>
-           <li>
-            <button onClick={() => handleNavigation('/users')}>Users</button>
-          </li>
-          {/* Dodajemo Logout dugme samo ako je korisnik prijavljen */}
+
+          {/* ADMIN opcije */}
+          {isLoggedIn && role === 'ADMIN' && (
+            <>
+              <li>
+                <button onClick={() => handleNavigation('/licences')}>Licences</button>
+              </li>
+              <li>
+                <button onClick={() => handleNavigation('/trainings')}>Trainings</button>
+              </li>
+              <li>
+                <button onClick={() => handleNavigation('/users')}>Users</button>
+              </li>
+            </>
+          )}
+
+          {/* USER opcije */}
+          {isLoggedIn && role === 'USER' && (
+            <>
+              <li>
+                <button onClick={() => handleNavigation('/trainer')}>Trainer Dashboard</button>
+              </li>
+              <li>
+                <button onClick={() => handleNavigation('/reservation')}>Reserve Licence</button>
+              </li>
+            </>
+          )}
+
+          {/* Logout uvijek za prijavljene */}
           {isLoggedIn && (
             <li>
               <button onClick={handleLogout}>Logout</button>

@@ -9,11 +9,18 @@ const ReservationLicence = () => {
   const [messageType, setMessageType] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [pendingLicence, setPendingLicence] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
 
-  const username = localStorage.getItem('username');
+  const token = localStorage.getItem('token');
+  const authHeaders = {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  };
 
   useEffect(() => {
+    fetchCurrentUser();
     fetchFreeLicences();
+
     const stored = localStorage.getItem('reservedLicence');
     if (stored) {
       try {
@@ -28,8 +35,18 @@ const ReservationLicence = () => {
     }
   }, []);
 
+  const fetchCurrentUser = () => {
+    fetch('/api/users/me', { headers: authHeaders })
+      .then((res) => res.ok ? res.json() : Promise.reject())
+      .then(setCurrentUser)
+      .catch(() => {
+        setMessageType('error');
+        setMessage('Error fetching user.');
+      });
+  };
+
   const fetchFreeLicences = () => {
-    fetch('http://localhost:5001/api/free-licences')
+    fetch('/api/free-licences', { headers: authHeaders })
       .then((res) => res.ok ? res.json() : Promise.reject())
       .then(setFreeLicences)
       .catch(() => {
@@ -61,14 +78,17 @@ const ReservationLicence = () => {
   };
 
   const confirmReservation = () => {
-    if (!pendingLicence || !username) return;
+    if (!pendingLicence || !currentUser) return;
 
     const today = new Date().toISOString().slice(0, 10);
 
-    fetch(`http://localhost:5001/api/licences/${pendingLicence.id}/assign`, {
+    fetch(`/api/licences/${pendingLicence.id}/assign`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ usage_date: today, assigned_trainer: username }),
+      headers: authHeaders,
+      body: JSON.stringify({
+        usage_date: today,
+        assigned_trainer: currentUser.username
+      }),
     })
       .then((res) => res.json())
       .then((data) => {
@@ -79,7 +99,7 @@ const ReservationLicence = () => {
           const reserved = {
             ...pendingLicence,
             usage_date: today,
-            assigned_trainer: username,
+            assigned_trainer: currentUser.username
           };
           setReservedLicence(reserved);
           localStorage.setItem('reservedLicence', JSON.stringify(reserved));
@@ -127,7 +147,7 @@ const ReservationLicence = () => {
           <h3>Reserved licence details</h3>
           <p><strong>Name:</strong> {reservedLicence.name}</p>
           <p><strong>Type:</strong> {reservedLicence.type}</p>
-          <p><strong>Username:</strong> {reservedLicence.user}</p>
+          <p><strong>Username:</strong> {currentUser?.username}</p>
           <p><strong>Password:</strong> {reservedLicence.password}</p>
           <p><strong>Usage date:</strong> {reservedLicence.usage_date}</p>
           <p><strong>Assigned trainer:</strong> {reservedLicence.assigned_trainer}</p>

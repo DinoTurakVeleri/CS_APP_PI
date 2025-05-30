@@ -13,13 +13,15 @@ const Trainings = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
+  const token = localStorage.getItem('token');
+  const authHeaders = {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  };
+
   const formatDate = (date) => {
     const d = new Date(date);
-    if (isNaN(d)) return '';
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+    return !isNaN(d) ? d.toISOString().split('T')[0] : '';
   };
 
   useEffect(() => {
@@ -30,7 +32,7 @@ const Trainings = () => {
 
   const fetchTrainings = () => {
     setIsLoading(true);
-    fetch('http://localhost:5001/api/trainings')
+    fetch('/api/trainings', { headers: authHeaders })
       .then(res => res.json())
       .then(setTrainings)
       .catch(() => setMessage('Failed to fetch trainings. Please try again.'))
@@ -38,20 +40,20 @@ const Trainings = () => {
   };
 
   const fetchLicences = () => {
-    fetch('http://localhost:5001/api/licences')
+    fetch('/api/licences', { headers: authHeaders })
       .then(res => res.json())
       .then(setLicences)
       .catch(() => setMessage('Failed to fetch licences. Please try again.'));
   };
 
   const fetchUsers = () => {
-    fetch('http://localhost:5001/api/users')
+    fetch('/api/users', { headers: authHeaders })
       .then(res => res.json())
       .then(setUsers)
       .catch(() => setMessage('Failed to load users.'));
   };
 
-  const usedLicenceIds = trainings.map(t => t.licence_id).filter(id => id);
+  const usedLicenceIds = trainings.map(t => t.licence_id).filter(Boolean);
 
   const addTraining = () => {
     if (!newTraining.title || !newTraining.description || !newTraining.licence_id) {
@@ -60,15 +62,13 @@ const Trainings = () => {
     }
 
     setIsLoading(true);
-
-    const licenceId = newTraining.licence_id || null;
-    fetch('http://localhost:5001/api/trainings', {
+    fetch('/api/trainings', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: authHeaders,
       body: JSON.stringify({
         ...newTraining,
         date: formatDate(newTraining.date),
-        licence_id: licenceId,
+        licence_id: newTraining.licence_id || null,
       }),
     })
       .then(res => res.json())
@@ -83,7 +83,10 @@ const Trainings = () => {
 
   const deleteTraining = (id) => {
     setIsLoading(true);
-    fetch(`http://localhost:5001/api/trainings/${id}`, { method: 'DELETE' })
+    fetch(`/api/trainings/${id}`, {
+      method: 'DELETE',
+      headers: authHeaders
+    })
       .then(() => {
         setMessage('Training successfully deleted!');
         fetchTrainings();
@@ -99,15 +102,13 @@ const Trainings = () => {
     }
 
     setIsLoading(true);
-
-    const licenceId = editTraining.licence_id || null;
-    fetch(`http://localhost:5001/api/trainings/${editTraining.id}`, {
+    fetch(`/api/trainings/${editTraining.id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: authHeaders,
       body: JSON.stringify({
         ...editTraining,
         date: formatDate(editTraining.date),
-        licence_id: licenceId,
+        licence_id: editTraining.licence_id || null,
       }),
     })
       .then(() => {
@@ -121,6 +122,14 @@ const Trainings = () => {
 
   const filteredTrainings = trainings.filter((training) =>
     training.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const renderCustomHeader = ({ date, decreaseMonth, increaseMonth }) => (
+    <div className="custom-datepicker-header">
+      <button onClick={decreaseMonth}>{'<'}</button>
+      <span>{date.toLocaleString('default', { month: 'long' })} {date.getFullYear()}</span>
+      <button onClick={increaseMonth}>{'>'}</button>
+    </div>
   );
 
   return (
@@ -138,12 +147,12 @@ const Trainings = () => {
           selected={newTraining.date}
           onChange={(date) => setNewTraining({ ...newTraining, date })}
           dateFormat="yyyy-MM-dd"
-          placeholderText="Select date"
+          renderCustomHeader={renderCustomHeader}
         />
         <select value={newTraining.trainer} onChange={(e) => setNewTraining({ ...newTraining, trainer: e.target.value })}>
           <option value="">Select Trainer</option>
           {users.map(user => (
-            <option key={user.id} value={user.name}>{user.name}</option>
+            <option key={user.id || user.username} value={user.name}>{user.name}</option>
           ))}
         </select>
         <select value={newTraining.licence_id} onChange={(e) => setNewTraining({ ...newTraining, licence_id: e.target.value })}>
@@ -158,18 +167,18 @@ const Trainings = () => {
       {editTraining && (
         <div className="form-container">
           <h2>Edit Training</h2>
-          <input type="text" placeholder="Title" value={editTraining.title} onChange={(e) => setEditTraining({ ...editTraining, title: e.target.value })} />
-          <input type="text" placeholder="Description" value={editTraining.description} onChange={(e) => setEditTraining({ ...editTraining, description: e.target.value })} />
+          <input type="text" value={editTraining.title} onChange={(e) => setEditTraining({ ...editTraining, title: e.target.value })} />
+          <input type="text" value={editTraining.description} onChange={(e) => setEditTraining({ ...editTraining, description: e.target.value })} />
           <DatePicker
             selected={editTraining.date ? new Date(editTraining.date) : null}
             onChange={(date) => setEditTraining({ ...editTraining, date })}
             dateFormat="yyyy-MM-dd"
-            placeholderText="Select date"
+            renderCustomHeader={renderCustomHeader}
           />
           <select value={editTraining.trainer} onChange={(e) => setEditTraining({ ...editTraining, trainer: e.target.value })}>
             <option value="">Select Trainer</option>
             {users.map(user => (
-              <option key={user.id} value={user.name}>{user.name}</option>
+              <option key={user.id || user.username} value={user.name}>{user.name}</option>
             ))}
           </select>
           <select value={editTraining.licence_id} onChange={(e) => setEditTraining({ ...editTraining, licence_id: e.target.value })}>

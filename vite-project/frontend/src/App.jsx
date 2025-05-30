@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import {
+  HashRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+} from 'react-router-dom';
 import Header from './components/Header';
 import Licences from './pages/Licences';
 import Trainings from './pages/Trainings';
@@ -7,6 +13,7 @@ import Login from './pages/Login';
 import Users from './pages/Users';
 import TrainerDashboard from './pages/TrainerDashboard';
 import ReservationLicence from './pages/ReservationLicence';
+import ProtectedRoute from './components/ProtectedRoute'; 
 import './App.css';
 
 function App() {
@@ -24,43 +31,55 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('username');
+    localStorage.removeItem('token'); 
+    localStorage.removeItem('role');  
     setIsLoggedIn(false);
   };
 
-  if (!authChecked) {
-    return <div>Loading...</div>;
-  }
+  if (!authChecked) return <div>Loading...</div>;
 
   const HomeContent = () => {
     const navigate = useNavigate();
+    const role = localStorage.getItem('role');
 
     return (
       <div className="home-content" style={{ display: 'flex', justifyContent: 'center' }}>
         <div className="grid-container">
-          <div className="grid-item clickable" onClick={() => navigate('/trainings')}>
-            <h2>TRAININGS</h2>
-            <p>View your trainings, and select upcoming ones.</p>
-          </div>
-          <div className="grid-item clickable" onClick={() => navigate('/licences')}>
-            <h2>LICENCES</h2>
-            <p>View and manage licences.</p>
-          </div>
-          <div className="grid-item clickable" onClick={() => navigate('/users')}>
-            <h2>USERS</h2>
-            <p>Manage platform users.</p>
-          </div>
-          <div className="grid-item clickable" onClick={() => navigate('/trainer')}>
-            <h2>TRAINER DASHBOARD</h2>
-            <p>View calendar and assign licence for the day.</p>
-          </div>
-          <div className="grid-item clickable" onClick={() => navigate('/reservation')}>
-            <h2>RESERVE LICENCE</h2>
-            <p>Choose and reserve a free licence for today.</p>
-          </div>
+          {role === 'ADMIN' && (
+            <>
+              <div className="grid-item clickable" onClick={() => navigate('/trainings')}>
+                <h2>TRAININGS</h2>
+                <p>View your trainings, and select upcoming ones.</p>
+              </div>
+              <div className="grid-item clickable" onClick={() => navigate('/licences')}>
+                <h2>LICENCES</h2>
+                <p>View and manage licences.</p>
+              </div>
+              <div className="grid-item clickable" onClick={() => navigate('/users')}>
+                <h2>USERS</h2>
+                <p>Manage platform users.</p>
+              </div>
+            </>
+          )}
+
+          {role === 'USER' && (
+            <>
+              <div className="grid-item clickable" onClick={() => navigate('/trainer')}>
+                <h2>TRAINER DASHBOARD</h2>
+                <p>View calendar and assign licence for the day.</p>
+              </div>
+              <div className="grid-item clickable" onClick={() => navigate('/reservation')}>
+                <h2>RESERVE LICENCE</h2>
+                <p>Choose and reserve a free licence for today.</p>
+              </div>
+            </>
+          )}
         </div>
       </div>
     );
   };
+
+  const username = localStorage.getItem('username');
 
   return (
     <Router>
@@ -75,29 +94,49 @@ function App() {
             path="/"
             element={isLoggedIn ? <HomeContent /> : <Navigate to="/login" />}
           />
+
+          {/* Trener rute */}
           <Route
             path="/trainer"
             element={
-              isLoggedIn
-                ? <TrainerDashboard loggedInTrainer={localStorage.getItem('username')} />
-                : <Navigate to="/login" />
+              <ProtectedRoute requiredRole="USER">
+                <TrainerDashboard loggedInTrainer={username} />
+              </ProtectedRoute>
             }
           />
           <Route
             path="/reservation"
-            element={isLoggedIn ? <ReservationLicence /> : <Navigate to="/login" />}
+            element={
+              <ProtectedRoute requiredRole="USER">
+                <ReservationLicence />
+              </ProtectedRoute>
+            }
           />
+
+          {/* Admin rute */}
           <Route
             path="/licences"
-            element={isLoggedIn ? <Licences /> : <Navigate to="/login" />}
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <Licences />
+              </ProtectedRoute>
+            }
           />
           <Route
             path="/trainings"
-            element={isLoggedIn ? <Trainings /> : <Navigate to="/login" />}
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <Trainings />
+              </ProtectedRoute>
+            }
           />
           <Route
             path="/users"
-            element={isLoggedIn ? <Users /> : <Navigate to="/login" />}
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <Users />
+              </ProtectedRoute>
+            }
           />
         </Routes>
       </div>

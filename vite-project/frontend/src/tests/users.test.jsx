@@ -15,8 +15,8 @@ global.fetch = vi.fn(() =>
     ok: true,
     json: () =>
       Promise.resolve([
-        { user_id: 1, name: 'Dino', username: 'dinot', role: 'ADMIN' },
-        { user_id: 2, name: 'Ivana', username: 'ivana123', role: 'USER' },
+        { user_id: 1, name: 'Dino Turak', username: 'dturak', role: 'ADMIN' },
+        { user_id: 2, name: 'Oscar Piastri', username: 'opiastri', role: 'USER' },
       ]),
   })
 );
@@ -30,10 +30,13 @@ describe('Users komponenta', () => {
     expect(screen.getByText(/users/i)).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(screen.getByText('Dino')).toBeInTheDocument();
-      expect(screen.getByText('Ivana')).toBeInTheDocument();
-      expect(screen.getByText('dinot')).toBeInTheDocument();
-      expect(screen.getByText('ivana123')).toBeInTheDocument();
+      expect(screen.getByText('Dino Turak')).toBeInTheDocument();
+      expect(screen.getByText('dturak')).toBeInTheDocument();
+      expect(screen.getByText('ADMIN')).toBeInTheDocument();
+
+      expect(screen.getByText('Oscar Piastri')).toBeInTheDocument();
+      expect(screen.getByText('opiastri')).toBeInTheDocument();
+      expect(screen.getByText('USER')).toBeInTheDocument();
     });
   });
 });

@@ -27,16 +27,18 @@ describe('Users komponenta', () => {
       render(<Users />);
     });
 
+    // Naslov
     expect(screen.getByText(/users/i)).toBeInTheDocument();
 
+    // Čekamo da se podaci pojave u tablici
     await waitFor(() => {
       expect(screen.getByText('Dino Turak')).toBeInTheDocument();
       expect(screen.getByText('dturak')).toBeInTheDocument();
-      expect(screen.getByText('ADMIN')).toBeInTheDocument();
+      expect(screen.getByRole('cell', { name: 'ADMIN' })).toBeInTheDocument();
 
       expect(screen.getByText('Oscar Piastri')).toBeInTheDocument();
       expect(screen.getByText('opiastri')).toBeInTheDocument();
-      expect(screen.getByText('USER')).toBeInTheDocument();
+      expect(screen.getByRole('cell', { name: 'USER' })).toBeInTheDocument();
     });
   });
 });
